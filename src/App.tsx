@@ -4,7 +4,7 @@ import { DownloadProgress } from './components/status/DownloadProgress';
 import { ModelSelector } from './components/model-selection/ModelSelector';
 
 function App() {
-  const { messages, sendMessage, isLoading, downloadProgress, isModelLoaded, selectedModel, selectModel } = useLLM();
+  const { messages, sendMessage, isLoading, downloadProgress, isModelLoaded, selectedModel, selectModel, resetModel } = useLLM();
 
   if (!selectedModel) {
     return (
@@ -59,6 +59,8 @@ function App() {
         messages={messages}
         onSendMessage={sendMessage}
         isLoading={isLoading}
+        selectedModelId={selectedModel || ""}
+        onBack={resetModel}
       />
     </>
   );

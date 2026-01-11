@@ -10,7 +10,7 @@ console.log("WebGemma Worker: Handler initialized with internal engine.");
 // Hook into the worker's message event
 self.onmessage = (msg: MessageEvent) => {
   const type = msg.data?.type || (msg.data?.kind ? `kind:${msg.data.kind}` : "unknown");
-  console.log("WebGemma Worker: Received message:", type);
+  console.log(`%c[Worker] Received: ${type}`, "color: magenta; font-weight: bold", msg.data);
   
   try {
     handler.onmessage(msg);

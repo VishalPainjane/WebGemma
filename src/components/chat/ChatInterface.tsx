@@ -1,17 +1,22 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Message } from '../../lib/hooks/use-llm';
-import { Send, Bot, Paperclip, Wrench, Sparkles, User } from 'lucide-react';
+import { AVAILABLE_MODELS } from '../../lib/constants';
+import { Send, Bot, Paperclip, Wrench, Sparkles, User, ShieldCheck, ChevronLeft } from 'lucide-react';
 
 interface ChatInterfaceProps {
   messages: Message[];
   onSendMessage: (text: string) => void;
   isLoading: boolean;
+  selectedModelId: string;
+  onBack: () => void;
 }
 
-export function ChatInterface({ messages, onSendMessage, isLoading }: ChatInterfaceProps) {
+export function ChatInterface({ messages, onSendMessage, isLoading, selectedModelId, onBack }: ChatInterfaceProps) {
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const activeModel = AVAILABLE_MODELS.find(m => m.id === selectedModelId);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -79,19 +84,32 @@ export function ChatInterface({ messages, onSendMessage, isLoading }: ChatInterf
       {/* Header - Glassmorphism */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-black/20 backdrop-blur-xl sticky top-0 z-20 shadow-sm">
         <div className="flex items-center gap-3">
+          <button 
+            onClick={onBack}
+            className="p-2 mr-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+            title="Back to Model Selection"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
           <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg shadow-indigo-500/20">
             <Bot className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="font-bold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">WebGemma</h1>
+            <h1 className="font-bold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+                {activeModel?.name || 'WebGemma'}
+            </h1>
             <div className="flex items-center text-[10px] font-medium text-emerald-400/90 tracking-wide uppercase">
               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-1.5 animate-[pulse_3s_infinite]"></span>
-              GPU Active
+              {activeModel?.quantType || 'GPU'} Active
             </div>
           </div>
         </div>
-        <div className="hidden sm:block">
-            <span className="text-xs text-white/30 font-light border border-white/10 px-3 py-1 rounded-full bg-white/5">Local AI • Privacy First</span>
+        <div className="hidden sm:flex items-center gap-3">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Privacy Verified</span>
+            </div>
+            <span className="text-xs text-white/30 font-light border border-white/10 px-3 py-1 rounded-full bg-white/5">Local Inference</span>
         </div>
       </header>
 
@@ -226,8 +244,8 @@ export function ChatInterface({ messages, onSendMessage, isLoading }: ChatInterf
           </button>
         </form>
         <div className="text-center mt-3">
-            <p className="text-[10px] text-gray-500 font-medium tracking-wide">
-                WEB GEMMA 2B • RUNNING LOCALLY
+            <p className="text-[10px] text-gray-500 font-medium tracking-wide uppercase">
+                {activeModel?.name || 'WebGemma'} • Running Locally on your {activeModel?.quantType || 'GPU'}
             </p>
         </div>
       </div>

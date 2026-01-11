@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from "react";
 import { CreateWebWorkerMLCEngine, MLCEngineInterface, InitProgressReport, ChatCompletionMessageParam } from "@mlc-ai/web-llm";
-import { MODEL_CONFIG } from "../constants";
+import { MODEL_CONFIG, AVAILABLE_MODELS } from "../constants";
 
 export interface Message {
   role: "user" | "assistant" | "system" | "tool";
@@ -41,17 +41,24 @@ export function useLLM() {
     });
 
     try {
-        console.log("Initializing WebGemma MLCEngine with model:", modelId);
+        console.log("%c[WebGemma] selectModel called", "color: cyan; font-weight: bold", { modelId });
+        
+        // Check if we are incorrectly re-using a cached ID
+        if (selectedModel === modelId && engine) {
+             console.log("%c[WebGemma] Model already loaded, skipping init.", "color: orange");
+             return;
+        }
+
         const worker = new Worker(new URL('../../workers/llm.worker.ts', import.meta.url), { type: 'module' });
         
         worker.onmessage = (msg) => {
             if (msg.data?.kind === "initProgressCallback") {
-                console.log("Main Thread: Received progress:", msg.data.progress);
+                console.log(`%c[WebGemma] Progress [${modelId}]:`, "color: grey", msg.data.progress);
             }
         };
 
         worker.onerror = (err) => {
-            console.error("Worker encountered an error:", err);
+            console.error("%c[WebGemma] Worker Error:", "color: red", err);
             setDownloadProgress({ 
                 progress: 0, 
                 timeElapsed: 0, 
@@ -60,9 +67,13 @@ export function useLLM() {
             engineInitRef.current = false; // Allow retry
         };
 
+        const targetModelConfig = MODEL_CONFIG.model_list.find(m => m.model_id === modelId);
+        console.log("%c[WebGemma] Loading Config for:", "color: cyan", modelId, targetModelConfig);
+        console.log("%c[WebGemma] Prebuilt Models Available:", "color: gray", MODEL_CONFIG.model_list.map(m => m.model_id));
+
         const appConfig = {
             ...MODEL_CONFIG,
-            useIndexedDBCache: true
+            useIndexedDBCache: true 
         };
 
         const timeoutId = setTimeout(() => {
@@ -80,7 +91,7 @@ export function useLLM() {
           { 
             initProgressCallback: (report: InitProgressReport) => {
                clearTimeout(timeoutId);
-               console.log("Model loading progress:", report.text);
+               console.log(`%c[WebGemma] Init Progress: ${report.text}`, "color: yellow");
                setDownloadProgress(report);
             },
             appConfig: appConfig,
@@ -160,6 +171,21 @@ export function useLLM() {
     }
   };
 
+  const resetModel = useCallback(() => {
+    // If an engine exists, we should ideally unload it to free memory, 
+    // though WebWorkers might handle this by termination if we drop the reference.
+    // For now, simple state reset.
+    if (engine) {
+        engine.unload(); // Attempt unload if supported or just drop ref
+    }
+    setEngine(null);
+    setMessages([SYSTEM_PROMPT]);
+    setSelectedModel(null);
+    setIsModelLoaded(false);
+    setDownloadProgress(null);
+    engineInitRef.current = false;
+  }, [engine]);
+
   return {
     messages,
     sendMessage,
@@ -167,6 +193,8 @@ export function useLLM() {
     downloadProgress,
     isModelLoaded,
     selectedModel,
-    selectModel
+    selectModel,
+    resetModel,
+    availableModels: AVAILABLE_MODELS
   };
 }

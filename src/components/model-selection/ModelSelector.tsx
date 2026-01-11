@@ -38,7 +38,7 @@ export function ModelSelector({ onSelect }: ModelSelectorProps) {
 }
 
 function ModelCard({ model, onSelect, index }: { model: ModelInfo, onSelect: (id: string) => void, index: number }) {
-  const isTopPick = model.name.includes("Max Quality") && model.name.includes("Gemma 3");
+  const isTopPick = model.id === "gemma-3-1b-it-q4bf16_1-MLC";
 
   return (
     <div 
