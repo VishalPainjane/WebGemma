@@ -38,11 +38,20 @@ export function ModelSelector({ onSelect }: ModelSelectorProps) {
 }
 
 function ModelCard({ model, onSelect, index }: { model: ModelInfo, onSelect: (id: string) => void, index: number }) {
+  const isTopPick = model.name.includes("Max Quality") && model.name.includes("Gemma 3");
+
   return (
     <div 
-      className="group relative flex flex-col bg-zinc-900/60 backdrop-blur-md border border-white/10 rounded-3xl p-6 hover:bg-zinc-800/80 hover:border-indigo-500/30 transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-500/10 hover:-translate-y-1 overflow-hidden"
+      className={`group relative flex flex-col bg-zinc-900/60 backdrop-blur-md border rounded-3xl p-6 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 overflow-hidden
+        ${isTopPick ? 'border-indigo-500/50 bg-indigo-500/5 shadow-indigo-500/10' : 'border-white/10 hover:bg-zinc-800/80 hover:border-indigo-500/30'}
+      `}
       style={{ animationDelay: `${index * 100}ms` }}
     >
+      {isTopPick && (
+        <div className="absolute top-0 right-0 bg-indigo-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl shadow-lg z-10">
+            TOP PICK
+        </div>
+      )}
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       
       {/* Header */}
@@ -83,11 +92,21 @@ function ModelCard({ model, onSelect, index }: { model: ModelInfo, onSelect: (id
           </span>
           <span className="text-gray-200 font-mono">{model.vram_required}</span>
         </div>
-         <div className="flex items-center justify-between text-xs">
+        <div className="flex items-center justify-between text-xs">
           <span className="flex items-center text-gray-500">
-            <BarChart3 className="w-3 h-3 mr-2" /> Eval
+            <BarChart3 className="w-3 h-3 mr-2" /> Quality
           </span>
-          <span className="text-gray-200">Standard</span>
+          <span className={`font-medium ${
+            model.quality_rating === 'Lossless' ? 'text-green-400' : 
+            model.quality_rating === 'Near Perfect' ? 'text-emerald-400' :
+            model.quality_rating === 'Balanced' ? 'text-cyan-400' : 'text-yellow-400'
+          }`}>{model.quality_rating}</span>
+        </div>
+        <div className="flex items-center justify-between text-xs">
+          <span className="flex items-center text-gray-500">
+            <CheckCircle2 className="w-3 h-3 mr-2" /> Released
+          </span>
+          <span className="text-gray-400">{model.release_date}</span>
         </div>
       </div>
 
