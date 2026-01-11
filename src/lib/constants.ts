@@ -138,7 +138,9 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
   }
 ];
 
-// Extend the prebuilt config to include our custom/new models that aren't in the default list yet.
+// Fallback WASM URL for Q4F16 models
+const GEMMA_2B_Q4F16_WASM = "https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0.2.46/gemma-2b-it-q4f16_1-ctx4k_cs1k-webgpu.wasm";
+
 export const MODEL_CONFIG: AppConfig = {
     ...prebuiltAppConfig,
     model_list: [
@@ -146,33 +148,30 @@ export const MODEL_CONFIG: AppConfig = {
         // Gemma 3 mocks (mapped to Gemma 2)
         {
             "model_id": "gemma-3-270m-it-q4f16_1-MLC",
-            "model_lib": "gemma-2b-q4f16_1-ctx4k_cs1k-webgpu.wasm",
+            "model_lib": GEMMA_2B_Q4F16_WASM,
             "vram_required_MB": 500,
             "low_resource_required": true,
              "model": "https://huggingface.co/mlc-ai/gemma-2b-it-q4f16_1-MLC/resolve/main/"
         },
         {
             "model_id": "gemma-3-1b-it-q4f16_1-MLC",
-            "model_lib": "gemma-2b-q4f16_1-ctx4k_cs1k-webgpu.wasm",
+            "model_lib": GEMMA_2B_Q4F16_WASM,
             "vram_required_MB": 1500,
             "low_resource_required": false,
              "model": "https://huggingface.co/mlc-ai/gemma-2b-it-q4f16_1-MLC/resolve/main/"
         },
-        // RecurrentGemma Mock (Using Gemma 2 weights as placeholder if actual weights aren't in registry default)
-        // Note: MLC actually has RecurrentGemma support, but to be safe and ensure it runs in this specific demo env
-        // without downloading a new huge logic, we map it to the known working weights but give it the ID.
-        // If the user *really* wants RecurrentGemma logic, they'd need the specific wasm. 
-        // For now, we simulate the *Choice* and *UI*.
         {
             "model_id": "recurrent-gemma-2b-it-q4f16_1-MLC",
-            "model_lib": "gemma-2b-q4f16_1-ctx4k_cs1k-webgpu.wasm", 
+            // RecurrentGemma usually requires a different WASM logic. 
+            // Since we are mocking it with Gemma 2b weights for this demo UI to work without crashes:
+            "model_lib": GEMMA_2B_Q4F16_WASM, 
             "vram_required_MB": 1800,
             "low_resource_required": false,
             "model": "https://huggingface.co/mlc-ai/gemma-2b-it-q4f16_1-MLC/resolve/main/"
         },
         {
             "model_id": "codegemma-2b-it-q4f16_1-MLC",
-            "model_lib": "gemma-2b-q4f16_1-ctx4k_cs1k-webgpu.wasm",
+            "model_lib": GEMMA_2B_Q4F16_WASM,
             "vram_required_MB": 2000,
             "low_resource_required": false,
             "model": "https://huggingface.co/mlc-ai/gemma-2b-it-q4f16_1-MLC/resolve/main/"
