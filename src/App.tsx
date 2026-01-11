@@ -1,9 +1,23 @@
 import { useLLM } from './lib/hooks/use-llm';
 import { ChatInterface } from './components/chat/ChatInterface';
 import { DownloadProgress } from './components/status/DownloadProgress';
+import { ModelSelector } from './components/model-selection/ModelSelector';
 
 function App() {
-  const { messages, sendMessage, isLoading, downloadProgress, isModelLoaded } = useLLM();
+  const { messages, sendMessage, isLoading, downloadProgress, isModelLoaded, selectedModel, selectModel } = useLLM();
+
+  if (!selectedModel) {
+    return (
+      <>
+        <div className="wavy-background">
+          <div className="wave-blob blob-1"></div>
+          <div className="wave-blob blob-2"></div>
+          <div className="wave-blob blob-3"></div>
+        </div>
+        <ModelSelector onSelect={selectModel} />
+      </>
+    );
+  }
 
   // 1. Downloading or Initializing State
   if (!isModelLoaded) {
