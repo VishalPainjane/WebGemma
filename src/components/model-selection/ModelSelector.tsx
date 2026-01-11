@@ -57,10 +57,26 @@ function ModelCard({ model, onSelect, index }: { model: ModelInfo, onSelect: (id
       {/* Header */}
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="text-xl font-bold text-white group-hover:text-indigo-300 transition-colors">
-            {model.name}
-          </h3>
+          <div className="flex items-center gap-2 mb-1">
+             <h3 className="text-xl font-bold text-white group-hover:text-indigo-300 transition-colors">
+                {model.name}
+             </h3>
+             {model.quantized && (
+                <span className="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-400 text-[9px] font-bold border border-indigo-500/30">
+                    {model.quantType}
+                </span>
+             )}
+          </div>
           <div className="flex flex-wrap gap-2 mt-2">
+            <a 
+                href={model.url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded bg-white/5 text-gray-500 border border-white/5 hover:bg-white/10 hover:text-gray-300 transition-colors"
+                onClick={(e) => e.stopPropagation()}
+            >
+                {model.source}
+            </a>
             {model.tags.map(tag => (
               <span key={tag} className="text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded bg-white/5 text-gray-400 border border-white/5">
                 {tag}
