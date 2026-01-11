@@ -138,10 +138,9 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
   }
 ];
 
-// Use the working F32 WASM as the safer fallback for all mocks to avoid 404s
-// This WASM is for 'gemma-2b-it-q4f32_1-ctx4k_cs1k-webgpu.wasm'
-// We use a generic recent version link that is more likely to exist, or reuse the one from the verified model.
-const GEMMA_2B_WASM_FALLBACK = "https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0.2.46/gemma-2b-it-q4f32_1-ctx4k_cs1k-webgpu.wasm";
+// Dynamically find the working model_lib from the prebuilt config to avoid 404s on hardcoded versions
+const workingModel = prebuiltAppConfig.model_list.find(m => m.model_id === "gemma-2b-it-q4f32_1-MLC");
+const WORKING_MODEL_LIB = workingModel?.model_lib || "https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0.2.48/gemma-2b-it-q4f32_1-ctx4k_cs1k-webgpu.wasm";
 
 export const MODEL_CONFIG: AppConfig = {
     ...prebuiltAppConfig,
@@ -149,28 +148,28 @@ export const MODEL_CONFIG: AppConfig = {
         ...prebuiltAppConfig.model_list,
         {
             "model_id": "gemma-3-270m-it-q4f16_1-MLC",
-            "model_lib": GEMMA_2B_WASM_FALLBACK,
+            "model_lib": WORKING_MODEL_LIB,
             "vram_required_MB": 500,
             "low_resource_required": true,
              "model": "https://huggingface.co/mlc-ai/gemma-2b-it-q4f32_1-MLC/resolve/main/"
         },
         {
             "model_id": "gemma-3-1b-it-q4f16_1-MLC",
-            "model_lib": GEMMA_2B_WASM_FALLBACK,
+            "model_lib": WORKING_MODEL_LIB,
             "vram_required_MB": 1500,
             "low_resource_required": false,
              "model": "https://huggingface.co/mlc-ai/gemma-2b-it-q4f32_1-MLC/resolve/main/"
         },
         {
             "model_id": "recurrent-gemma-2b-it-q4f16_1-MLC",
-            "model_lib": GEMMA_2B_WASM_FALLBACK, 
+            "model_lib": WORKING_MODEL_LIB, 
             "vram_required_MB": 1800,
             "low_resource_required": false,
             "model": "https://huggingface.co/mlc-ai/gemma-2b-it-q4f32_1-MLC/resolve/main/"
         },
         {
             "model_id": "codegemma-2b-it-q4f16_1-MLC",
-            "model_lib": GEMMA_2B_WASM_FALLBACK,
+            "model_lib": WORKING_MODEL_LIB,
             "vram_required_MB": 2000,
             "low_resource_required": false,
             "model": "https://huggingface.co/mlc-ai/gemma-2b-it-q4f32_1-MLC/resolve/main/"
