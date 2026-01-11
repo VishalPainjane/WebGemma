@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { CreateWebWorkerMLCEngine, MLCEngineInterface, InitProgressReport, ChatCompletionMessageParam } from "@mlc-ai/web-llm";
 import { SELECTED_MODEL, MODEL_CONFIG } from "../constants";
-import { AVAILABLE_TOOLS, executeToolCall } from "../agent/tools";
+import { executeToolCall } from "../agent/tools";
 
 export interface Message {
   role: "user" | "assistant" | "system" | "tool";
@@ -47,11 +47,11 @@ export function useLLM() {
         // Listen for raw worker errors that might not be caught by the engine
         worker.onerror = (err) => {
             console.error("Worker encountered an error:", err);
-            setDownloadProgress(prev => ({ 
+            setDownloadProgress({ 
                 progress: 0, 
                 timeElapsed: 0, 
                 text: "Error: Worker crashed. Check console." 
-            }));
+            });
         };
 
         console.log("Worker created, loading model:", SELECTED_MODEL);
@@ -136,7 +136,7 @@ export function useLLM() {
     const chunks = await engine.chat.completions.create({
       messages: history as ChatCompletionMessageParam[],
       stream: true,
-      tools: AVAILABLE_TOOLS,
+      // tools: AVAILABLE_TOOLS, // Disable tools as Gemma-2b doesn't support them in WebLLM yet
     });
 
     let fullContent = "";
