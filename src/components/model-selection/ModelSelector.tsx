@@ -1,5 +1,5 @@
 import { AVAILABLE_MODELS, ModelInfo } from "../../lib/constants";
-import { Cpu, HardDrive, Zap, CheckCircle2, ChevronRight, BarChart3, AlertTriangle } from "lucide-react";
+import { Cpu, HardDrive, Zap, CheckCircle2, ChevronRight, BarChart3, AlertTriangle, Bot } from "lucide-react";
 
 interface ModelSelectorProps {
   onSelect: (modelId: string) => void;
@@ -66,6 +66,13 @@ function ModelCard({ model, onSelect, index }: { model: ModelInfo, onSelect: (id
                     {model.quantType}
                 </span>
              )}
+             <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold border ${
+                model.runtime_status === 'Experimental' 
+                ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/30' 
+                : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+             }`}>
+                {model.runtime_status}
+             </span>
           </div>
           <div className="flex flex-wrap gap-2 mt-2">
             <a 
@@ -117,6 +124,18 @@ function ModelCard({ model, onSelect, index }: { model: ModelInfo, onSelect: (id
             model.quality_rating === 'Near Perfect' ? 'text-emerald-400' :
             model.quality_rating === 'Balanced' ? 'text-cyan-400' : 'text-yellow-400'
           }`}>{model.quality_rating}</span>
+        </div>
+        <div className="flex items-center justify-between text-xs">
+          <span className="flex items-center text-gray-500">
+            <Zap className="w-3 h-3 mr-2" /> Context
+          </span>
+          <span className="text-gray-300">{model.context_window}</span>
+        </div>
+        <div className="flex items-center justify-between text-xs">
+          <span className="flex items-center text-gray-500">
+            <Bot className="w-3 h-3 mr-2" /> Modality
+          </span>
+          <span className="text-gray-300">{model.modality}</span>
         </div>
         <div className="flex items-center justify-between text-xs">
           <span className="flex items-center text-gray-500">
